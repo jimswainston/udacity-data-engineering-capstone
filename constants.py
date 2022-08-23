@@ -1,5 +1,5 @@
 # CONTAINS ANY CONSTANS BEING USED IN THE PROJECT
-countries = [
+COUNTRIES = [
 'Afghanistan',
 'Akrotiri',
 'Albania',

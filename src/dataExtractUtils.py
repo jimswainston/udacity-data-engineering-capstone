@@ -60,6 +60,7 @@ def processArticle(article):
 def processAuthor(article,article_id):
     authors = []
     affiliations = []
+    affiliationErrors = [] #store affiliations where a country was not found
     
     if "author" in article:
         
@@ -92,8 +93,13 @@ def processAuthor(article,article_id):
                             affiliation_id = uuid.uuid4()
                             country_name = country
                             affiliations.append([affiliation_id,author_id,country_name])
+                    elif affiliationCountries is None:
+                        affiliation_id = uuid.uuid4()
+                        affiliation_name = affiliation["name"]
+                        affiliationErrors.append([affiliation_id,author_id,affiliation_name])
 
-    return authors,affiliations
+
+    return authors,affiliations,affiliationErrors
 
 
 

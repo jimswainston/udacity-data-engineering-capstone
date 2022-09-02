@@ -57,6 +57,38 @@ def processArticle(article):
 
 
 
+def processAuthor(article,article_id):
+    authors = []
+    
+    if "author" in article:
+        
+        for author in article["author"]:
+            
+            author_id = uuid.uuid4()
+                       
+            if "given" in author:
+                first_name = author["given"]
+            else:
+                first_name = ""
+
+            if "family" in author:
+                last_name = author["family"]
+            else:
+                last_name = ""
+            
+            #handle empty strings
+            if not first_name:
+                first_name = NA
+            if not last_name:
+                last_name = NA
+            authors.append([author_id,article_id,first_name,last_name])
+        
+            #for affiliation in author["affiliation"]:
+            #    affiliationCountries = de.matchCountriesInAffiliation(affiliation["name"])
+            #    print(affiliationCountries) 
+
+    
+    return authors
 
 
 

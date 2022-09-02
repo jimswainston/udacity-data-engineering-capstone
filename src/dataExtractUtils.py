@@ -59,6 +59,7 @@ def processArticle(article):
 
 def processAuthor(article,article_id):
     authors = []
+    affiliations = []
     
     if "author" in article:
         
@@ -82,13 +83,17 @@ def processAuthor(article,article_id):
             if not last_name:
                 last_name = NA
             authors.append([author_id,article_id,first_name,last_name])
-        
-            #for affiliation in author["affiliation"]:
-            #    affiliationCountries = de.matchCountriesInAffiliation(affiliation["name"])
-            #    print(affiliationCountries) 
 
-    
-    return authors
+            if "affiliation" in author:
+                for affiliation in author["affiliation"]:
+                    affiliationCountries = matchCountriesInAffiliation(affiliation["name"])
+                    if affiliationCountries is not None:
+                        for country in affiliationCountries:
+                            affiliation_id = uuid.uuid4()
+                            country_name = country
+                            affiliations.append([affiliation_id,author_id,country_name])
+
+    return authors,affiliations
 
 
 

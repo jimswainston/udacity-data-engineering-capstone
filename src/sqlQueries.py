@@ -53,6 +53,18 @@ article_table_insert = ("""
 INSERT INTO articles (article_id,DOI,title,published_date) values (%s,%s,%s,%s);
 """)
 
+author_table_insert = ("""
+INSERT INTO authors (author_id,article_id,first_name,last_name) values (%s,%s,%s,%s);
+""")
+
+affiliation_table_insert = ("""
+INSERT INTO author_affiliation (affiliation_id,author_id,country_name) values (%s,%s,%s);
+""")
+
+affiliation_errors_table_insert = ("""
+INSERT INTO affiliation_errors (affiliation_id,author_id,affiliation_name) values (%s,%s,%s);
+""")
+
 
 
 # QUERY LISTS

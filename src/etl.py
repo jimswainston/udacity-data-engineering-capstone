@@ -72,7 +72,7 @@ def process_article_file(cur, filepath):
                 articleData['title'].append(article[2])
                 articleData['published_date'].append(article[3])
 
-                authors = de.processAuthor(item,article[0]) # pass article id in so it can be used as foreign key for author
+                authors = de.processAuthor(item,article[0],article[1]) # pass article id in so it can be used as foreign key for author # pass DOI for locating errors in files
                 affiliationErrorData = authors[2]
                 authorAffiliations = authors[1]
                 authors = authors[0]
@@ -107,6 +107,18 @@ def process_article_file(cur, filepath):
     # insert article records
     
     cur.executemany(article_table_insert, articles.to_numpy().tolist())
+
+    # insert author records
+
+    cur.executemany(author_table_insert, authors.to_numpy().tolist())
+
+    # insert affiliation records
+
+    cur.executemany(affiliation_table_insert, affiliations.to_numpy().tolist())
+
+    # insert affiliation error records
+
+    cur.executemany(affiliation_errors_table_insert, affiliationErrors.to_numpy().tolist())
     
     # insert artist record
     #artist_data = df[['artist_id', 'artist_name','artist_location','artist_latitude','artist_longitude']].values[0].tolist()
@@ -149,6 +161,7 @@ def process_data(cur, conn, filepath, func):
         func(cur, datafile)
         conn.commit()
         print('{}/{} files processed.'.format(i, num_files))
+        print('Processed file: {}'.format(datafile))
 
 def main():
     """ETL entry point 
@@ -160,8 +173,9 @@ def main():
     conn = psycopg2.connect("host=127.0.0.1 dbname=udacityprojectdb user=student password=6GNjBQvF")
     cur = conn.cursor()
 
-    process_data(cur, conn, filepath='../data/Crossref', func=process_article_file)
-    
+    #process_data(cur, conn, filepath='../data/Crossref', func=process_article_file)
+    process_data(cur, conn, filepath='/home/jswainston/Downloads/April2022CrossrefPublicDataFile', func=process_article_file)
+
     conn.close()
 
 

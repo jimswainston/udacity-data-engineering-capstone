@@ -47,6 +47,14 @@ CREATE TABLE affiliation_errors (
 );
 """)
 
+# INSERT RECORDS
+
+article_table_insert = ("""
+INSERT INTO articles (article_id,DOI,title,published_date) values (%s,%s,%s,%s);
+""")
+
+
+
 # QUERY LISTS
 
 create_table_queries = [article_table_create, author_table_create, affiliation_table_create, affiliationErrors_table_create]

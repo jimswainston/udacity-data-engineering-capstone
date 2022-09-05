@@ -17,7 +17,7 @@ def matchCountriesInAffiliation(affiliation):
 def processPublishedDate(jsonPublishedObject):
     dateParts = jsonPublishedObject["date-parts"][0]
     if len(dateParts) == 0:
-        return NA
+        return None
     elif len(dateParts) == 3:
         year = dateParts[0]
         month = dateParts[1]
@@ -30,8 +30,14 @@ def processPublishedDate(jsonPublishedObject):
         day = 1 # if not available assume first day of month
         publishedDate = datetime.datetime(year,month,day)
         return publishedDate
+    elif len(dateParts) == 1:
+        year = dateParts[0]
+        month = 1 # if not available assume first month of year
+        day = 1 # if not available assume first day of month
+        publishedDate = datetime.datetime(year,month,day)
+        return publishedDate
     else:
-        return NA
+        return None
 
 
 def processArticle(article):
@@ -41,17 +47,17 @@ def processArticle(article):
     if "DOI" in article:
         DOI = article["DOI"]
     else:
-        DOI = NA
+        DOI = None
 
     if "title" in article:
-        title = article["title"]
+        title = article["title"][0]
     else:
-        title = NA
+        title = None
 
     if "published" in article:
         publishedDate = processPublishedDate(article["published"])
     else:
-        publishedDate = NA
+        publishedDate = None
 
     return [article_id,DOI,title,publishedDate]
 
@@ -80,9 +86,9 @@ def processAuthor(article,article_id):
             
             #handle empty strings
             if not first_name:
-                first_name = NA
+                first_name = None
             if not last_name:
-                last_name = NA
+                last_name = None
             authors.append([author_id,article_id,first_name,last_name])
 
             if "affiliation" in author:

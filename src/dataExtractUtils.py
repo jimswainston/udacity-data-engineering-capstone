@@ -4,6 +4,7 @@ import uuid
 from numpy import nan as NA
 import datetime 
 
+
 def matchCountriesInAffiliation(affiliation):
     matches = []
     for x in constants.COUNTRIES:
@@ -116,6 +117,12 @@ def processAuthor(article,article_id,DOI):
 
 
 
+
+def year_key_lookup (pubdate):
+    if pubdate is not None:
+        year_index = constants.DIM_YEAR_LOOKUP['year'].index(pubdate.year) ##what type is datetime.year?
+        year_key = constants.DIM_YEAR_LOOKUP['year_id'][year_index]
+        return year_key
 
 
 

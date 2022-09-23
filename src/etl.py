@@ -28,7 +28,8 @@ def process_article_file(cur, filepath):
     'article_id' : [],
     'DOI' : [],
     'title' : [],
-    'published_date' : []
+    'published_date' : [],
+    'year_id' : []
     }
 
     authorData = {
@@ -67,10 +68,14 @@ def process_article_file(cur, filepath):
         if "type" in item:
             if item["type"] == 'journal-article':
                 article = de.processArticle(item)
+
+                year_key = de.year_key_lookup(article[3])
+
                 articleData['article_id'].append(article[0])
                 articleData['DOI'].append(article[1])
                 articleData['title'].append(article[2])
                 articleData['published_date'].append(article[3])
+                articleData['year_id'].append(year_key)
 
                 authors = de.processAuthor(item,article[0],article[1]) # pass article id in so it can be used as foreign key for author # pass DOI for locating errors in files
                 affiliationErrorData = authors[2]

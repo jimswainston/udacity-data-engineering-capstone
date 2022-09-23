@@ -20,7 +20,7 @@ def create_database():
     # close connection to default database
     conn.close()    
     
-    # connect to sparkify database
+    # connect to sparkify database udacityprojectdb
     conn = psycopg2.connect("host=127.0.0.1 dbname=udacityprojectdb user=student password=6GNjBQvF")
     conn.set_session(autocommit=True)
     cur = conn.cursor()

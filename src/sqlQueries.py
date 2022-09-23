@@ -15,6 +15,7 @@ CREATE TABLE articles (
     DOI VARCHAR,
     title VARCHAR,
     published_date DATE,
+    year_id INT,
     PRIMARY KEY (article_id)
 );
 """)
@@ -50,7 +51,7 @@ CREATE TABLE affiliation_errors (
 # INSERT RECORDS
 
 article_table_insert = ("""
-INSERT INTO articles (article_id,DOI,title,published_date) values (%s,%s,%s,%s);
+INSERT INTO articles (article_id,DOI,title,published_date,year_id) values (%s,%s,%s,%s,%s);
 """)
 
 author_table_insert = ("""

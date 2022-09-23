@@ -274,3 +274,9 @@ COUNTRIES = {
 'Wales' : 'GBR',
 'Northern Island' : 'GBR'
 }
+
+DIM_YEAR_LOOKUP = {
+    'year' : list(range(1800,2201)),
+    'year_id' : list(range(1,402))    
+}
+

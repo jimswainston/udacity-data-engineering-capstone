@@ -5,6 +5,11 @@ from numpy import nan as NA
 import datetime 
 
 
+
+def country_code_lookup(country):
+    country_code = constants.COUNTRIES[country]
+    return country_code
+
 def matchCountriesInAffiliation(affiliation):
     matches = []
     for x in constants.COUNTRIES:
@@ -103,7 +108,8 @@ def processAuthor(article,article_id,DOI):
                             for country in affiliationCountries:
                                 affiliation_id = uuid.uuid4()
                                 country_name = country
-                                affiliations.append([affiliation_id,author_id,country_name])
+                                country_code = country_code_lookup(country)
+                                affiliations.append([affiliation_id,author_id,country_name,country_code])
                         elif affiliationCountries is None:
                             affiliation_id = uuid.uuid4()
                             affiliation_name = affiliation["name"]
@@ -120,7 +126,7 @@ def processAuthor(article,article_id,DOI):
 
 def year_key_lookup (pubdate):
     if pubdate is not None:
-        year_index = constants.DIM_YEAR_LOOKUP['year'].index(pubdate.year) ##what type is datetime.year?
+        year_index = constants.DIM_YEAR_LOOKUP['year'].index(pubdate.year) 
         year_key = constants.DIM_YEAR_LOOKUP['year_id'][year_index]
         return year_key
 

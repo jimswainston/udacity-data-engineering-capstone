@@ -35,6 +35,7 @@ CREATE TABLE author_affiliation (
     affiliation_id uuid NOT NULL,
     author_id uuid NOT NULL,
     country_name VARCHAR,
+    country_code VARCHAR,
     PRIMARY KEY (affiliation_id)
 );
 """)
@@ -67,7 +68,7 @@ INSERT INTO authors (author_id,article_id,first_name,last_name) values (%s,%s,%s
 """)
 
 affiliation_table_insert = ("""
-INSERT INTO author_affiliation (affiliation_id,author_id,country_name) values (%s,%s,%s);
+INSERT INTO author_affiliation (affiliation_id,author_id,country_name,country_code) values (%s,%s,%s,%s);
 """)
 
 affiliation_errors_table_insert = ("""

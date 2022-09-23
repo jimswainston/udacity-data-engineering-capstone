@@ -42,7 +42,8 @@ def process_article_file(cur, filepath):
     affiliationData = {
     'affiliation_id' : [],
     'author_id' : [],
-    'country_name' : []
+    'country_name' : [],
+    'country_code' : []
     }
 
     affiliationCountry = {
@@ -94,6 +95,7 @@ def process_article_file(cur, filepath):
                         affiliationData['affiliation_id'].append(affiliation[0])
                         affiliationData['author_id'].append(affiliation[1])
                         affiliationData['country_name'].append(affiliation[2])
+                        affiliationData['country_code'].append(affiliation[3])
 
                 if affiliationErrorData is not None:
                     for affiliationError in affiliationErrorData:

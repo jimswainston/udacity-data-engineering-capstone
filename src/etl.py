@@ -168,6 +168,17 @@ def process_data(cur, conn, filepath, func):
         print('{}/{} files processed.'.format(i, num_files))
         print('Processed file: {}'.format(datafile))
 
+
+def load_years(cur,conn):
+    dim_year_data = {
+    'year_id' : list(range(1,402)),
+    'year' : list(range(1800,2201))
+    }
+
+    dim_year = pd.DataFrame(dim_year_data)
+    cur.executemany(year_table_insert, dim_year.to_numpy().tolist())
+    conn.commit()
+
 def main():
     """ETL entry point 
     - creates connection to udacityprojectdb database
@@ -177,6 +188,8 @@ def main():
     psycopg2.extras.register_uuid()
     conn = psycopg2.connect("host=127.0.0.1 dbname=udacityprojectdb user=student password=6GNjBQvF")
     cur = conn.cursor()
+
+    load_years(cur,conn)
 
     #process_data(cur, conn, filepath='../data/Crossref', func=process_article_file)
     process_data(cur, conn, filepath='/home/jswainston/Downloads/April2022CrossrefPublicDataFile', func=process_article_file)

@@ -48,6 +48,14 @@ CREATE TABLE affiliation_errors (
 );
 """)
 
+year_table_create = ("""
+CREATE TABLE DimYear (
+    year_id INT,
+    year INT,
+    PRIMARY KEY (year_id)
+);
+""")
+
 # INSERT RECORDS
 
 article_table_insert = ("""
@@ -66,9 +74,14 @@ affiliation_errors_table_insert = ("""
 INSERT INTO affiliation_errors (affiliation_id,author_id,affiliation_name) values (%s,%s,%s);
 """)
 
+year_table_insert = ("""
+INSERT INTO DimYear (year_id,year) values (%s,%s);
+""")
+
+
 
 
 # QUERY LISTS
 
-create_table_queries = [article_table_create, author_table_create, affiliation_table_create, affiliationErrors_table_create]
+create_table_queries = [article_table_create, author_table_create, affiliation_table_create, affiliationErrors_table_create,year_table_create]
 drop_table_queries = [article_table_drop, author_table_drop, affiliation_table_drop, affiliation_errors_table_drop]

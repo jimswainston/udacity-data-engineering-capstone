@@ -10,6 +10,7 @@ import json
 import dataExtractUtils as de
 import psycopg2.extras
 import psycopg2.extensions
+import constants
 
 def process_article_file(cur, filepath):
     """Reads data from a CROSSREF article file and inserts into udacityprojectdb database 
@@ -181,6 +182,31 @@ def load_years(cur,conn):
     cur.executemany(year_table_insert, dim_year.to_numpy().tolist())
     conn.commit()
 
+def load_countries(cur,conn):
+    country_data = {
+        'country_code' : [],
+        'country_name' : []
+    }
+
+    for code in constants.COUNTRIES.values():
+        country_data['country_code'].append(code)
+
+    for name in constants.COUNTRIES.keys():
+        country_data['country_name'].append(name)
+
+    countries = pd.DataFrame(country_data)
+    countries = countries.dropna()
+    countries = countries.drop_duplicates(subset=['country_code'])
+    countries = countries.sort_values('country_code')
+    countries.loc[countries['country_code'] == 'GBR', 'country_name'] = 'United Kingdom'
+    countries.loc[countries['country_code'] == 'AUS', 'country_name'] = 'Australia'
+    countries.loc[countries['country_code'] == 'FRA', 'country_name'] = 'France'
+    countries = countries.reset_index(drop=True)
+    countries['country_id'] = countries.index
+    countries = countries[['country_code','country_name']]
+    cur.executemany(country_table_insert, countries.to_numpy().tolist())
+    conn.commit()
+
 def main():
     """ETL entry point 
     - creates connection to udacityprojectdb database
@@ -192,6 +218,7 @@ def main():
     cur = conn.cursor()
 
     load_years(cur,conn)
+    load_countries(cur,conn)
 
     #process_data(cur, conn, filepath='../data/Crossref', func=process_article_file)
     process_data(cur, conn, filepath='/home/jswainston/Downloads/April2022CrossrefPublicDataFile', func=process_article_file)

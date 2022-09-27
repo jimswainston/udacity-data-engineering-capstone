@@ -4,7 +4,8 @@ article_table_drop = "DROP TABLE IF EXISTS articles;"
 author_table_drop = "DROP TABLE IF EXISTS authors;"
 affiliation_table_drop = "DROP TABLE IF EXISTS affiliations;"
 affiliation_errors_table_drop = "DROP TABLE IF EXISTS affiliation_errors;"
-
+year_table_drop = "DROP TABLE IF EXISTS DimYear"
+country_table_drop = "DROP TABLE IF EXISTS dim_country"
 
 
 #CREATE TABLES
@@ -57,6 +58,15 @@ CREATE TABLE DimYear (
 );
 """)
 
+country_table_create = ("""
+CREATE TABLE dim_country (
+    country_id serial,
+    country_code VARCHAR,
+    country_name VARCHAR,
+    PRIMARY KEY (country_id)
+);
+""")
+
 # INSERT RECORDS
 
 article_table_insert = ("""
@@ -79,10 +89,14 @@ year_table_insert = ("""
 INSERT INTO DimYear (year_id,year) values (%s,%s);
 """)
 
+country_table_insert = ("""
+INSERT INTO dim_country (country_code,country_name) values (%s,%s);
+""")
+
 
 
 
 # QUERY LISTS
 
-create_table_queries = [article_table_create, author_table_create, affiliation_table_create, affiliationErrors_table_create,year_table_create]
-drop_table_queries = [article_table_drop, author_table_drop, affiliation_table_drop, affiliation_errors_table_drop]
+create_table_queries = [article_table_create, author_table_create, affiliation_table_create, affiliationErrors_table_create,year_table_create,country_table_create]
+drop_table_queries = [article_table_drop, author_table_drop, affiliation_table_drop, affiliation_errors_table_drop,year_table_drop,country_table_drop]

@@ -3,12 +3,20 @@ import constants
 import uuid
 from numpy import nan as NA
 import datetime 
+import pandas.io.sql as sqlio
+import psycopg2
+
 
 
 
 def country_code_lookup(country):
     country_code = constants.COUNTRIES[country]
     return country_code
+
+def country_key_lookup (country_code,country_table):
+    if country_code is not None:
+        country_id = country_table.loc[country_table['country_code'] == country_code, 'country_id'].iloc[0]
+        return int(country_id)
 
 def matchCountriesInAffiliation(affiliation):
     matches = []
@@ -70,7 +78,7 @@ def processArticle(article):
 
 
 
-def processAuthor(article,article_id,DOI):
+def processAuthor(article,article_id,DOI,country_table):
     authors = []
     affiliations = []
     affiliationErrors = [] #store affiliations where a country was not found
@@ -109,7 +117,9 @@ def processAuthor(article,article_id,DOI):
                                 affiliation_id = uuid.uuid4()
                                 country_name = country
                                 country_code = country_code_lookup(country)
-                                affiliations.append([affiliation_id,author_id,country_name,country_code])
+                                country_id = country_key_lookup(country_code,country_table)
+                                #affiliations.append([affiliation_id,author_id,country_name,country_code])
+                                affiliations.append([affiliation_id,author_id,country_id])
                         elif affiliationCountries is None:
                             affiliation_id = uuid.uuid4()
                             affiliation_name = affiliation["name"]
@@ -129,6 +139,8 @@ def year_key_lookup (pubdate):
         year_index = constants.DIM_YEAR_LOOKUP['year'].index(pubdate.year) 
         year_key = constants.DIM_YEAR_LOOKUP['year_id'][year_index]
         return year_key
+
+
 
 
 

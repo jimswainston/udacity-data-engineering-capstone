@@ -11,8 +11,10 @@ import dataExtractUtils as de
 import psycopg2.extras
 import psycopg2.extensions
 import constants
+import pandas.io.sql as sqlio
 
-def process_article_file(cur, filepath):
+
+def process_article_file(cur, filepath, country_table):
     """Reads data from a CROSSREF article file and inserts into udacityprojectdb database 
     
     Parameters
@@ -43,8 +45,9 @@ def process_article_file(cur, filepath):
     affiliationData = {
     'affiliation_id' : [],
     'author_id' : [],
-    'country_name' : [],
-    'country_code' : []
+    #'country_name' : [],
+    #'country_code' : [],
+    'country_id' : []
     }
 
     affiliationCountry = {
@@ -79,7 +82,7 @@ def process_article_file(cur, filepath):
                 articleData['published_date'].append(article[3])
                 articleData['year_id'].append(year_key)
 
-                authors = de.processAuthor(item,article[0],article[1]) # pass article id in so it can be used as foreign key for author # pass DOI for locating errors in files
+                authors = de.processAuthor(item,article[0],article[1],country_table) # pass article id in so it can be used as foreign key for author # pass DOI for locating errors in files
                 affiliationErrorData = authors[2]
                 authorAffiliations = authors[1]
                 authors = authors[0]
@@ -95,8 +98,9 @@ def process_article_file(cur, filepath):
                     for affiliation in authorAffiliations:
                         affiliationData['affiliation_id'].append(affiliation[0])
                         affiliationData['author_id'].append(affiliation[1])
-                        affiliationData['country_name'].append(affiliation[2])
-                        affiliationData['country_code'].append(affiliation[3])
+                        affiliationData['country_id'].append(affiliation[2])
+                        #affiliationData['country_name'].append(affiliation[2])
+                        #affiliationData['country_code'].append(affiliation[3])
 
                 if affiliationErrorData is not None:
                     for affiliationError in affiliationErrorData:
@@ -108,7 +112,7 @@ def process_article_file(cur, filepath):
 
     articles = pd.DataFrame(articleData)
     authors = pd.DataFrame(authorData)
-    affiliations = pd.DataFrame(affiliationData)
+    affiliations = pd.DataFrame(affiliationData, dtype=object)
     affiliationErrors = pd.DataFrame(affiliationErrors) 
 
 
@@ -121,18 +125,15 @@ def process_article_file(cur, filepath):
     cur.executemany(author_table_insert, authors.to_numpy().tolist())
 
     # insert affiliation records
-
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+        print(affiliations)
+    
     cur.executemany(affiliation_table_insert, affiliations.to_numpy().tolist())
 
     # insert affiliation error records
 
     cur.executemany(affiliation_errors_table_insert, affiliationErrors.to_numpy().tolist())
     
-    # insert artist record
-    #artist_data = df[['artist_id', 'artist_name','artist_location','artist_latitude','artist_longitude']].values[0].tolist()
-    #cur.execute(artist_table_insert, artist_data)
-
-
 
 def process_data(cur, conn, filepath, func):
     """Reads all files under directory and inserts into udacityprojectdb database 
@@ -153,6 +154,12 @@ def process_data(cur, conn, filepath, func):
     
     """
     
+    # load country data used for reference in ETL
+    connCountry = psycopg2.connect("host=127.0.0.1 dbname=udacityprojectdb user=student password=6GNjBQvF")
+    sql = "select * from dim_country;"
+    country_table = sqlio.read_sql_query(sql, conn)
+    connCountry.close()
+
     # get all files matching extension from directory
     all_files = []
     for root, dirs, files in os.walk(filepath):
@@ -166,7 +173,7 @@ def process_data(cur, conn, filepath, func):
 
     # iterate over files and process
     for i, datafile in enumerate(all_files, 1):
-        func(cur, datafile)
+        func(cur, datafile, country_table)
         conn.commit()
         print('{}/{} files processed.'.format(i, num_files))
         print('Processed file: {}'.format(datafile))

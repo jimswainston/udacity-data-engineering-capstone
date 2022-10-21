@@ -14,6 +14,40 @@ import constants
 import pandas.io.sql as sqlio
 
 
+def load_fact_gdp(cur,conn,filepath,country_table):
+    gdp_data = pd.read_csv(filepath,header=2)
+    
+    fact_gdp = {
+        'id' : [],
+        'country_id' : [],
+        'year_id' : [],
+        'gdp_amount' : []
+    }
+
+    codes = list(constants.COUNTRIES.values())
+    codes = list(dict.fromkeys(codes))  # remove duplicate codes
+
+    years = list(range(2015,2021))
+
+    for code in codes:
+        country_id = de.country_key_lookup(code,country_table)
+        for year in years:
+            id = uuid.uuid4()
+            gdp_amount = None
+            year_id = de.year_key_lookup(year) 
+            try:            
+                gdp_amount = gdp_data.loc[gdp_data['Country Code'] == code, str(year)].iloc[0]                
+            except IndexError:
+                print(str(code) + " " + str(year) + " " + str("Country code not found"))
+            fact_gdp['id'].append(id)
+            fact_gdp['country_id'].append(country_id)
+            fact_gdp['year_id'].append(year_id)
+            fact_gdp['gdp_amount'].append(gdp_amount)
+    
+    gdp_table = pd.DataFrame(fact_gdp, dtype=object)
+    cur.executemany(gdp_table_insert, gdp_table.to_numpy().tolist())
+    conn.commit()
+
 def process_article_file(cur, filepath, country_table):
     """Reads data from a CROSSREF article file and inserts into udacityprojectdb database 
     
@@ -135,7 +169,7 @@ def process_article_file(cur, filepath, country_table):
     cur.executemany(affiliation_errors_table_insert, affiliationErrors.to_numpy().tolist())
     
 
-def process_data(cur, conn, filepath, func):
+def process_data(cur, conn, filepath, func, country_table):
     """Reads all files under directory and inserts into udacityprojectdb database 
     
     Parameters
@@ -154,12 +188,6 @@ def process_data(cur, conn, filepath, func):
     
     """
     
-    # load country data used for reference in ETL
-    connCountry = psycopg2.connect("host=127.0.0.1 dbname=udacityprojectdb user=student password=6GNjBQvF")
-    sql = "select * from dim_country;"
-    country_table = sqlio.read_sql_query(sql, conn)
-    connCountry.close()
-
     # get all files matching extension from directory
     all_files = []
     for root, dirs, files in os.walk(filepath):
@@ -227,8 +255,15 @@ def main():
     load_years(cur,conn)
     load_countries(cur,conn)
 
-    #process_data(cur, conn, filepath='../data/Crossref', func=process_article_file)
-    process_data(cur, conn, filepath='/home/jswainston/Downloads/April2022CrossrefPublicDataFile', func=process_article_file)
+    # load country data used for reference in ETL
+    connCountry = psycopg2.connect("host=127.0.0.1 dbname=udacityprojectdb user=student password=6GNjBQvF")
+    sql = "select * from dim_country;"
+    country_table = sqlio.read_sql_query(sql, conn)
+    connCountry.close()
+
+    load_fact_gdp(cur,conn,filepath='../data/WorldBank/API_NY.GDP.MKTP.CD_DS2_en_csv_v2_4481247.csv', country_table=country_table)
+    
+    process_data(cur, conn, filepath='/home/jswainston/Downloads/April2022CrossrefPublicDataFile', func=process_article_file, country_table=country_table)
 
     conn.close()
 

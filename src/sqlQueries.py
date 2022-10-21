@@ -6,6 +6,7 @@ affiliation_table_drop = "DROP TABLE IF EXISTS affiliations;"
 affiliation_errors_table_drop = "DROP TABLE IF EXISTS affiliation_errors;"
 year_table_drop = "DROP TABLE IF EXISTS DimYear"
 country_table_drop = "DROP TABLE IF EXISTS dim_country"
+gdp_table_drop = "DROP TABLE IF EXISTS fact_gdp"
 
 
 #CREATE TABLES
@@ -66,6 +67,16 @@ CREATE TABLE dim_country (
 );
 """)
 
+fact_gdp_table_create =("""
+CREATE TABLE fact_gdp (
+    id uuid NOT NULL,
+    country_id INT,
+    year_id INT,
+    gdp_amount FLOAT8,
+    PRIMARY KEY (id)
+);
+""")
+
 # INSERT RECORDS
 
 article_table_insert = ("""
@@ -92,10 +103,13 @@ country_table_insert = ("""
 INSERT INTO dim_country (country_code,country_name) values (%s,%s);
 """)
 
+gdp_table_insert = ("""
+INSERT INTO fact_gdp (id,country_id,year_id,gdp_amount) values (%s,%s,%s,%s);
+""")
 
 
 
 # QUERY LISTS
 
-create_table_queries = [article_table_create, author_table_create, affiliation_table_create, affiliationErrors_table_create,year_table_create,country_table_create]
-drop_table_queries = [article_table_drop, author_table_drop, affiliation_table_drop, affiliation_errors_table_drop,year_table_drop,country_table_drop]
+create_table_queries = [article_table_create, author_table_create, affiliation_table_create, affiliationErrors_table_create,year_table_create,country_table_create,fact_gdp_table_create]
+drop_table_queries = [article_table_drop, author_table_drop, affiliation_table_drop, affiliation_errors_table_drop,year_table_drop,country_table_drop,gdp_table_drop]

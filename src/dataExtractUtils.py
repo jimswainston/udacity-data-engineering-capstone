@@ -136,9 +136,14 @@ def processAuthor(article,article_id,DOI,country_table):
 
 def year_key_lookup (pubdate):
     if pubdate is not None:
-        year_index = constants.DIM_YEAR_LOOKUP['year'].index(pubdate.year) 
-        year_key = constants.DIM_YEAR_LOOKUP['year_id'][year_index]
-        return year_key
+        if type(pubdate) is datetime:
+            year_index = constants.DIM_YEAR_LOOKUP['year'].index(pubdate.year) 
+            year_key = constants.DIM_YEAR_LOOKUP['year_id'][year_index]
+            return year_key
+        elif type(pubdate) is int:
+            year_index = constants.DIM_YEAR_LOOKUP['year'].index(pubdate) 
+            year_key = constants.DIM_YEAR_LOOKUP['year_id'][year_index]
+            return year_key
 
 
 

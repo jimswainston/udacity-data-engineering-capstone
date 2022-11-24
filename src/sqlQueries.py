@@ -37,7 +37,10 @@ CREATE TABLE author_affiliation (
     affiliation_id uuid NOT NULL,
     author_id uuid NOT NULL,
     country_id INT,
-    PRIMARY KEY (affiliation_id)
+    PRIMARY KEY (affiliation_id),
+    CONSTRAINT fk_country
+      FOREIGN KEY(country_id) 
+	  REFERENCES dim_country(country_id)
 );
 """)
 
@@ -111,5 +114,5 @@ INSERT INTO fact_gdp (id,country_id,year_id,gdp_amount) values (%s,%s,%s,%s);
 
 # QUERY LISTS
 
-create_table_queries = [article_table_create, author_table_create, affiliation_table_create, affiliationErrors_table_create,year_table_create,country_table_create,fact_gdp_table_create]
+create_table_queries = [article_table_create, author_table_create, affiliationErrors_table_create,year_table_create,country_table_create,fact_gdp_table_create,affiliation_table_create]
 drop_table_queries = [article_table_drop, author_table_drop, affiliation_table_drop, affiliation_errors_table_drop,year_table_drop,country_table_drop,gdp_table_drop]

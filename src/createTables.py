@@ -1,4 +1,5 @@
 import psycopg2
+import constants
 from sqlQueries import create_table_queries, drop_table_queries
 
 
@@ -9,7 +10,7 @@ def create_database():
     """
     
     # connect to default database
-    conn = psycopg2.connect("host=127.0.0.1 dbname=postgres user=student password=6GNjBQvF")
+    conn = psycopg2.connect(constants.CONNECTION_STRING)
     conn.set_session(autocommit=True)
     cur = conn.cursor()
     
@@ -21,7 +22,7 @@ def create_database():
     conn.close()    
     
     # connect to sparkify database udacityprojectdb
-    conn = psycopg2.connect("host=127.0.0.1 dbname=udacityprojectdb user=student password=6GNjBQvF")
+    conn = psycopg2.connect(constants.CONNECTION_STRING)
     conn.set_session(autocommit=True)
     cur = conn.cursor()
     

@@ -280,4 +280,6 @@ DIM_YEAR_LOOKUP = {
     'year_id' : list(range(1,402))    
 }
 
+CONNECTION_STRING = "host=127.0.0.1 dbname=udacityprojectdb user=student password=6GNjBQvF"
+
 

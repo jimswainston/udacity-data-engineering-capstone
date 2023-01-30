@@ -291,14 +291,14 @@ def main():
     - calls process_data function with process_crossref_file as an argument to first process all article data files
     """
     psycopg2.extras.register_uuid()
-    conn = psycopg2.connect("host=127.0.0.1 dbname=udacityprojectdb user=student password=6GNjBQvF")
+    conn = psycopg2.connect(constants.CONNECTION_STRING)
     cur = conn.cursor()
 
     load_years(cur,conn)
     load_countries(cur,conn)
 
     # load country data used for reference in ETL
-    connCountry = psycopg2.connect("host=127.0.0.1 dbname=udacityprojectdb user=student password=6GNjBQvF")
+    connCountry = psycopg2.connect(constants.CONNECTION_STRING)
     sql = "select * from dim_country;"
     country_table = sqlio.read_sql_query(sql, conn)
     connCountry.close()

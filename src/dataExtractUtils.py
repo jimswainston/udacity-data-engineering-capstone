@@ -238,7 +238,7 @@ def year_key_lookup (pubdate):
     year_key (int) : the id of the year for a published date.    
     """    
     if pubdate is not None:
-        if type(pubdate) is datetime:
+        if type(pubdate) is datetime.datetime:
             year_index = constants.DIM_YEAR_LOOKUP['year'].index(pubdate.year) 
             year_key = constants.DIM_YEAR_LOOKUP['year_id'][year_index]
             return year_key

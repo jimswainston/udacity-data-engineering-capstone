@@ -15,6 +15,23 @@ import pandas.io.sql as sqlio
 
 
 def load_fact_gdp(cur,conn,filepath,country_table):
+    """
+    Loads GDP data from a csv file into fact_gdp database table
+    
+    Parameters
+    ----------
+    cur : a psycopg2 cursor object
+        The cursor object that can be used to execute statements against the database
+        
+    conn : a psycopg2 connection object
+        Handles the connection to a PostgreSQL database instance
+
+    filepath: str
+        location of the gdp csv data file
+
+    country_table: pandas dataframe 
+        table containing contents of dim_country       
+    """    
     gdp_data = pd.read_csv(filepath,header=2)
     
     fact_gdp = {
@@ -49,7 +66,8 @@ def load_fact_gdp(cur,conn,filepath,country_table):
     conn.commit()
 
 def process_article_file(cur, filepath, country_table):
-    """Reads data from a CROSSREF article file and inserts into udacityprojectdb database 
+    """
+    Reads data from a CROSSREF article file and inserts into udacityprojectdb database 
     
     Parameters
     ----------
@@ -58,7 +76,9 @@ def process_article_file(cur, filepath, country_table):
         
     filepath : str
         The filepath to the folder where the article metadata files are stored
-    
+
+    country_table: pandas dataframe 
+        table containing contents of dim_country    
     """
     
     articleData = {
@@ -78,9 +98,7 @@ def process_article_file(cur, filepath, country_table):
 
     affiliationData = {
     'affiliation_id' : [],
-    'author_id' : [],
-    #'country_name' : [],
-    #'country_code' : [],
+    'author_id' : [],    
     'country_id' : []
     }
 
@@ -95,8 +113,6 @@ def process_article_file(cur, filepath, country_table):
     'affiliation_name' : []
     }
 
-    # open article file
-    ##df = pd.read_json(filepath, lines=True)
     with gzip.open(filepath, 'r') as fin:        
         json_bytes = fin.read()    
                       
@@ -106,7 +122,7 @@ def process_article_file(cur, filepath, country_table):
     for item in data["items"]:
         if "type" in item:
             if item["type"] == 'journal-article':
-                article = de.processArticle(item)
+                article = de.process_article(item)
 
                 year_key = de.year_key_lookup(article[3])
 
@@ -116,7 +132,7 @@ def process_article_file(cur, filepath, country_table):
                 articleData['published_date'].append(article[3])
                 articleData['year_id'].append(year_key)
 
-                authors = de.processAuthor(item,article[0],article[1],country_table) # pass article id in so it can be used as foreign key for author # pass DOI for locating errors in files
+                authors = de.process_author(item,article[0],article[1],country_table) # pass article id in so it can be used as foreign key for author # pass DOI for locating errors in files
                 affiliationErrorData = authors[2]
                 authorAffiliations = authors[1]
                 authors = authors[0]
@@ -132,9 +148,7 @@ def process_article_file(cur, filepath, country_table):
                     for affiliation in authorAffiliations:
                         affiliationData['affiliation_id'].append(affiliation[0])
                         affiliationData['author_id'].append(affiliation[1])
-                        affiliationData['country_id'].append(affiliation[2])
-                        #affiliationData['country_name'].append(affiliation[2])
-                        #affiliationData['country_code'].append(affiliation[3])
+                        affiliationData['country_id'].append(affiliation[2])                        
 
                 if affiliationErrorData is not None:
                     for affiliationError in affiliationErrorData:
@@ -177,15 +191,17 @@ def process_data(cur, conn, filepath, func, country_table):
     cur : a psycopg2 cursor object
         The cursor object that can be used to execute statements against the udacityprojectdb database
     
-    con: a psycopg2 connection object
+    conn: a psycopg2 connection object
         The connection object that provides the connection to the udacityprojectdb database
     
     filepath : str
         The filepath to the folder where the JSON article data files are stored
         
     func: a function object
-        if process_article_file then all article files will be processed     
-    
+        if process_article_file then all article files will be processed
+
+    country_table: pandas dataframe 
+        table containing contents of dim_country    
     """
     
     # get all files matching extension from directory
@@ -208,6 +224,19 @@ def process_data(cur, conn, filepath, func, country_table):
 
 
 def load_years(cur,conn):
+    """
+    Populate dim_year table
+    
+    Parameters
+    ----------
+    cur : a psycopg2 cursor object
+        The cursor object that can be used to execute statements against the database
+        
+    conn : a psycopg2 connection object
+        Handles the connection to a PostgreSQL database instance
+        
+    
+    """    
     dim_year_data = {
     'year_id' : list(range(1,402)),
     'year' : list(range(1800,2201))
@@ -218,6 +247,19 @@ def load_years(cur,conn):
     conn.commit()
 
 def load_countries(cur,conn):
+    """
+    Populates the dim_country table
+    
+    Parameters
+    ----------
+    cur : a psycopg2 cursor object
+        The cursor object that can be used to execute statements against the database
+        
+    conn : a psycopg2 connection object
+        Handles the connection to a PostgreSQL database instance
+        
+    
+    """    
     country_data = {
         'country_code' : [],
         'country_name' : []
@@ -263,7 +305,7 @@ def main():
 
     load_fact_gdp(cur,conn,filepath='../data/WorldBank/API_NY.GDP.MKTP.CD_DS2_en_csv_v2_4481247.csv', country_table=country_table)
     
-    process_data(cur, conn, filepath='/home/jswainston/Downloads/April2022CrossrefPublicDataFile', func=process_article_file, country_table=country_table)
+    process_data(cur, conn, filepath='../data/Crossref', func=process_article_file, country_table=country_table)
 
     conn.close()
 

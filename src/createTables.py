@@ -31,6 +31,14 @@ def create_database():
 def drop_tables(cur, conn):
     """
     Drops each table using the queries in `drop_table_queries` list.
+
+    Parameters
+    ----------
+    cur : a psycopg2 cursor object
+        The cursor object that can be used to execute statements against the database
+        
+    conn : a psycopg2 connection object
+        Handles the connection to a PostgreSQL database instance
     """
     for query in drop_table_queries:
         try: 
@@ -45,6 +53,14 @@ def drop_tables(cur, conn):
 def create_tables(cur, conn):
     """
     Creates each table using the queries in `create_table_queries` list. 
+
+    Parameters
+    ----------
+    cur : a psycopg2 cursor object
+        The cursor object that can be used to execute statements against the database
+        
+    conn : a psycopg2 connection object
+        Handles the connection to a PostgreSQL database instance
     """
     for query in create_table_queries:
         try: 

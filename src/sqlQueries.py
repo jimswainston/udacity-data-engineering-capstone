@@ -4,7 +4,7 @@ article_table_drop = "DROP TABLE IF EXISTS articles;"
 author_table_drop = "DROP TABLE IF EXISTS authors;"
 affiliation_table_drop = "DROP TABLE IF EXISTS affiliations;"
 affiliation_errors_table_drop = "DROP TABLE IF EXISTS affiliation_errors;"
-year_table_drop = "DROP TABLE IF EXISTS DimYear"
+year_table_drop = "DROP TABLE IF EXISTS dim_year"
 country_table_drop = "DROP TABLE IF EXISTS dim_country"
 gdp_table_drop = "DROP TABLE IF EXISTS fact_gdp"
 
@@ -54,7 +54,7 @@ CREATE TABLE affiliation_errors (
 """)
 
 year_table_create = ("""
-CREATE TABLE DimYear (
+CREATE TABLE dim_year (
     year_id INT,
     year INT,
     PRIMARY KEY (year_id)
@@ -99,7 +99,7 @@ INSERT INTO affiliation_errors (affiliation_id,author_id,affiliation_name) value
 """)
 
 year_table_insert = ("""
-INSERT INTO DimYear (year_id,year) values (%s,%s);
+INSERT INTO dim_year (year_id,year) values (%s,%s);
 """)
 
 country_table_insert = ("""

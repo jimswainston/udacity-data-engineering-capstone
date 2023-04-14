@@ -3,6 +3,8 @@ import warnings
 import pandas.io.sql as sqlio
 import psycopg2
 from psycopg2 import sql
+from psycopg2.errors import ForeignKeyViolation
+
 
 def primary_key_count_test(connection,table_name,primary_key):
     """
@@ -44,4 +46,29 @@ def primary_key_count_test(connection,table_name,primary_key):
         
 
     
+def foreign_key_constraint_test(connection,table_name,primary_key,key_value):
+
+    conn = connection
     
+    fk_constraint_check = sql.SQL("""
+    delete from {table_name}
+    where {primary_key} = {id}
+    """).format(table_name = sql.Identifier(table_name),
+    primary_key = sql.Identifier(primary_key),
+    id = sql.Literal(key_value),
+    )
+    
+    try:
+        result = sqlio.read_sql_query(fk_constraint_check, conn)
+    except sqlio.DatabaseError as e:
+        if isinstance(e.__cause__, ForeignKeyViolation):
+            print("Foreign key constraint test passed. Database threw the correct error as shown below \n")
+            print(e.__cause__)
+    else:
+        print("Foreign key consraint test failed. Data deleted that could be referenced from another table")
+
+        
+  
+    
+  
+        
